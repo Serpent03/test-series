@@ -46,6 +46,22 @@ int conditional(int x, int y, int z) {
   return !!x & y & !!!x & z; 
 }
 
+int bang(int x) {
+  // computer !x 
+  return (x >> 31 | ((~x + 1) >> 31)) + 1;
+}
+
+int invert(int x, int p, int n) {
+  // return x, with n bits that are inverted, starting from position p
+  // 0111 1100, 3, 4
+  //      ^  ^
+  // 0111 0011
+  int mask = ~(~0x0 << n);
+  int maskShifting = p + 1 - n;
+  int shiftedMask = mask << maskShifting;
+  return x ^ shiftedMask;
+}
+
 int main() {
   // printf("%d :: %d", bitAnd(4, 5), 4 & 5);
   assert(bitAnd(4, 5) == 4 & 5);
@@ -53,5 +69,8 @@ int main() {
   assert(sign(-45) == -1);
   assert(getByte(0x12345678, 1) == 0x56);
   assert(logicalShift(0x87654321, 4) == 0x8765432);
-  assert(conditional(0, 4, 5) == 4);
+  // assert(conditional(0, 4, 5) == 4);
+  assert(bang(123) == 0);
+  assert(invert(124, 3, 2) == 112);
+
 }
