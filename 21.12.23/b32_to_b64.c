@@ -32,6 +32,8 @@ void b32toi(char* inp, char* decodedString) {
         bm = (bm << 5) | base32(inp[i]);
         bitLen += 5;
         flush = bitLen == 40;
+        // theoretically, we could take all the input here
+        // and directly convert it to base64 with groups of 6bit 'words'
         while (flush) {
             decodedString[idx++] = (bm >> ((unsigned long long)bitLen - 8ULL)) & 0xFFULL;
             bitLen -= 8;
