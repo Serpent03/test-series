@@ -1,29 +1,49 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
 
-void bin(unsigned n)
-{
-    unsigned i;
-    for (i = 1 << 31; i > 0; i = i / 2)
-        (n & i) ? printf("1") : printf("0");
+void bin(unsigned long long n) {
+    for (unsigned long long i = 1ULL << 39ULL; i > 0; i >>= 1) {
+        printf((n & i) ? "1" : "0");
+    }
     printf("\n");
 }
 
 int base32(char in) {
-  printf("%c :: %d\n", in, in - 65);
+    // printf("%c :: %d\n", in, in - 65);
     if (in >= 'A' && in <= 'Z') {
-        return (int)in - 65;
+        return (int)in - 'A';
     }
     if (in >= '2' && in <= '7') {
-        return (int)in - 4; 
+        return (int)in - '2' + 26; 
     }
-    return 0; // if the character is for padding
+    return 0; // if the character is for padding: '='
+}
+
+void b32toi(char* inp, char* decodedString) {
+    unsigned long long bm = 0;
+    int bitLen = 0;
+    int idx = 0;
+    bool flush = false;
+
+    for (int i = 0; i < strlen(inp); i++) {
+        bm = (bm << 5) | base32(inp[i]);
+        bitLen += 5;
+        flush = bitLen == 40;
+        while (flush) {
+            decodedString[idx++] = (bm >> ((unsigned long long)bitLen - 8ULL)) & 0xFFULL;
+            bitLen -= 8;
+            if (bitLen == 0) {
+                flush = false;
+            }
+        }
+    }
+    decodedString[idx] = '\0';
 }
 
 int main() {
-    // how the heck do you encode base32 to base64 ?? lol
     
     int N;
     // scanf("%d", &N);
@@ -32,42 +52,11 @@ int main() {
     // scanf("%s", inp);
 
     char inp[201];
-    strcpy(inp, "ORXXAY3PMRSXE==="); 
+    strcpy(inp, "NBQWG23FOJZGC3TL"); 
 
-    unsigned int binaryMessage = 0;
     char decodedString[201];
-    int idx = 0;
-    int mask = ~((~0) << 8);
-    
-    // binaryMessage |= base32(inp[0]);
-    // bin(binaryMessage);
-    // binaryMessage <<= 5; // base32 has a length of 5 bits
-    // binaryMessage |= base32(inp[1]);
-    // bin(binaryMessage);
-    // binaryMessage <<= 5;
-    // binaryMessage |= base32(inp[2]);
-    // bin(binaryMessage);
-    // binaryMessage &= mask; // retain only one byte
-    // bin(binaryMessage);
-    
-    binaryMessage |= base32(inp[0]);
-    binaryMessage <<= 3; // necessary
-    bin(binaryMessage);
-    binaryMessage |= base32(inp[1]);
-    bin(binaryMessage);
-    bin(mask);
-    binaryMessage &= mask;
-    bin(binaryMessage);
-    printf("%c", binaryMessage);
-    
-    // for (int i = 0; i < strlen(inp); i += 2) {
-    //     binaryMessage |= base32(inp[i]);
-    //     binaryMessage <<= 5;
-    //     bin(binaryMessage);
-    //     binaryMessage |= base32(inp[i+1]);
-    //     binaryMessage &= mask;
-    //     // printf("%d\n", binaryMessage);
-    // }
+    b32toi(inp, decodedString);
+    printf("%s", decodedString);
     
     /* Enter your code here. Read input from STDIN. Print output to STDOUT */    
     return 0;
