@@ -25,13 +25,14 @@ int main() {
   // find the maximum possible pair of A * B
 
 
-  int C = 13;
-  int ibLenOfC = binaryLength(13);
+  int C = 585219;
+  int ibLenOfC = binaryLength(C);
   long long int maxProduct = 0;
 
   for (int i = 1; i < (1 << (ibLenOfC)); i++) {
     int B = i ^ C;
-    maxProduct = _max(i * B, maxProduct);
+    long long int res = i * B;
+    maxProduct = (maxProduct > res) ? maxProduct : res;
   }
 
   printf("%lld", maxProduct);

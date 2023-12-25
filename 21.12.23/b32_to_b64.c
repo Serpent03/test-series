@@ -26,18 +26,13 @@ void b32toi(char* inp, char* decodedString) {
     unsigned long long bm = 0;
     int bitLen = 0;
     int idx = 0;
-    bool flush = false;
 
     for (int i = 0; i < strlen(inp); i++) {
         bm = (bm << 5) | base32(inp[i]);
         bitLen += 5;
-        flush = bitLen == 40;
-        while (flush) {
+        while (bitLen >= 8) {
             decodedString[idx++] = (bm >> ((unsigned long long)bitLen - 8ULL)) & 0xFFULL;
             bitLen -= 8;
-            if (bitLen == 0) {
-                flush = false;
-            }
         }
     }
     decodedString[idx] = '\0';
